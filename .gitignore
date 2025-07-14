@@ -1,0 +1,126 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+.env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# VS Code
+.vscode/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# dotenv environment variables
+.env
+.env.*
+
+# Database files
+*.sqlite3
+*.db
+*.db-journal
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Postgres dumps
+*.sql
+
+# Local settings
+local_settings.py
+
+# PyCharm
+.idea/
+
+# Ignore secrets
+secrets.json
+
+# Ignore test output
+*.out
+
+# Ignore compiled Cython files
+*.c
+*.cpp
+*.pyd
+*.pyo
+*.pyd
+
+# Ignore wheel files
+*.whl
+
+# Ignore backup files
+*~
+*.bak
+*.tmp
+
+# Ignore pipenv
+Pipfile.lock
+
+# Ignore poetry
+poetry.lock
+
+# Ignore celery beat schedule file
+celerybeat-schedule
+
+# Ignore pytest
+.pytest_cache/
+
+# Ignore coverage
+.coverage
+
+# Ignore SQLAlchemy migration files
+alembic/versions/
+
+# Ignore migration files
+migrations/
