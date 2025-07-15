@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import date
 
 
 class Role(Base):
@@ -38,22 +39,40 @@ class Employee(Base):
     date_of_birth = Column(Date, nullable=True)
     national_insurance_number = Column(String, nullable=True)
 
+    bank_requests = relationship("BankRequests", back_populates="employee")
+    dbs_checks = relationship("DBSChecks", back_populates="employee")
+    home_office_requests = relationship("HomeOfficeRequests", back_populates="employee")
     # user = relationship("User", back_populates="employee")
 
 
 class BankRequests(Base):
     __tablename__ = "bank_requests"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    # employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    request_date = Column(Date, nullable=True)
+    status = Column(String, nullable=True)
+    details = Column(String, nullable=True)
+
+    employee = relationship("Employee", back_populates="bank_requests" )
 
 
 class HomeOfficeRequests(Base):
     __tablename__ = "home_office_requests"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    # employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    request_date = Column(Date, nullable=True)
+    status = Column(String, nullable=True)
+    details = Column(String, nullable=True)
+
+    employee = relationship("Employee", back_populates="home_office_requests")
 
 
 class DBSChecks(Base):
     __tablename__ = "dbs_checks"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    # employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    request_date = Column(Date, nullable=True)
+    status = Column(String, nullable=True)
+    details = Column(String, nullable=True)
+
+    employee = relationship("Employee", back_populates="dbs_checks")
