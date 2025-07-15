@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from datetime import date
 
 
@@ -18,7 +18,7 @@ class RoleOut(RoleBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # User schemas
@@ -37,7 +37,7 @@ class UserOut(UserBase):
     role: RoleOut
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Employee schemas
@@ -53,7 +53,6 @@ class EmployeeBase(BaseModel):
 
 
 class EmployeeCreate(EmployeeBase):
-
     first_name: str
     last_name: str
     email: EmailStr
@@ -76,41 +75,79 @@ class EmployeeUpdate(EmployeeBase):
 
 class EmployeeOut(EmployeeBase):
     id: int
+    bank_request_statuses: Optional[List[str]] = None
+    dbs_check_statuses: Optional[List[str]] = None
+    home_office_request_statuses: Optional[List[str]] = None
+
+    @staticmethod
+    def from_orm_with_status(employee):
+        # Extract statuses from bank requests, DBS checks, and home office requests
+        bank_statuses = [
+            req.status
+            for req in getattr(employee, "bank_requests", [])
+            if hasattr(req, "status") and req.status is not None
+        ]
+        dbs_statuses = [
+            req.status
+            for req in getattr(employee, "dbs_checks", [])
+            if hasattr(req, "status") and req.status is not None
+        ]
+        home_office_statuses = [
+            req.status
+            for req in getattr(employee, "home_office_requests", [])
+            if hasattr(req, "status") and req.status is not None
+        ]
+
+        # Validate and dump employee data
+        data = EmployeeOut.model_validate(employee, from_attributes=True).model_dump()
+        data["bank_request_statuses"] = bank_statuses
+        data["dbs_check_statuses"] = dbs_statuses
+        data["home_office_request_statuses"] = home_office_statuses
+        return EmployeeOut(**data)
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Bank Request schemas
 class BankRequestBase(BaseModel):
     employee_id: int
+    request_date: Optional[date] = None
+    status: Optional[str] = None
+    details: Optional[str] = None
 
 
 class BankRequestCreate(BankRequestBase):
-    pass
+    employee_id: int
+    request_date: Optional[date] = None
+    status: Optional[str] = None
+    details: Optional[str] = None
 
 
 class BankRequestUpdate(BankRequestBase):
-    pass
+    employee_id: Optional[int] = None
+    request_date: Optional[date] = None
+    status: Optional[str] = None
+    details: Optional[str] = None
 
 
 class BankRequestOut(BankRequestBase):
     id: int
-    request_date: date
-    status: Optional[str] = None
-    details: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Home Office Request schemas
 class HomeOfficeRequestBase(BaseModel):
     employee_id: int
+    request_date: Optional[date] = None
+    status: Optional[str] = None
+    details: Optional[str] = None
 
 
 class HomeOfficeRequestCreate(HomeOfficeRequestBase):
-    pass
+    employee_id: int
 
 
 class HomeOfficeRequestUpdate(HomeOfficeRequestBase):
@@ -119,21 +156,21 @@ class HomeOfficeRequestUpdate(HomeOfficeRequestBase):
 
 class HomeOfficeRequestOut(HomeOfficeRequestBase):
     id: int
-    request_date: date
-    status: Optional[str] = None
-    details: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # DBS Check schemas
 class DBSCheckBase(BaseModel):
     employee_id: int
+    check_date: Optional[date] = None
+    result: Optional[str] = None
+    details: Optional[str] = None
 
 
 class DBSCheckCreate(DBSCheckBase):
-    pass
+    employee_id: int
 
 
 class DBSCheckUpdate(DBSCheckBase):
@@ -142,12 +179,9 @@ class DBSCheckUpdate(DBSCheckBase):
 
 class DBSCheckOut(DBSCheckBase):
     id: int
-    check_date: date
-    result: Optional[str] = None
-    details: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Auth schemas
