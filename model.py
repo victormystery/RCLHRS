@@ -9,6 +9,7 @@ class Role(Base):
     role_name = Column(String, unique=True, nullable=False)
     is_hr = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
+    is_employee = Column(Boolean, default=False)
 
     users = relationship("User", back_populates="role")
 
@@ -22,12 +23,13 @@ class User(Base):
     role_id = Column(Integer, ForeignKey("roles.id"))
 
     role = relationship("Role", back_populates="users")
-    # employee = relationship("Employee", back_populates="user", uselist=False)
+    employee = relationship("Employee", back_populates="user", uselist=False)
 
 
 class Employee(Base):
     __tablename__ = "employees"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
 
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
@@ -41,7 +43,7 @@ class Employee(Base):
     bank_requests = relationship("BankRequests", back_populates="employee")
     dbs_checks = relationship("DBSChecks", back_populates="employee")
     home_office_requests = relationship("HomeOfficeRequests", back_populates="employee")
-    # user = relationship("User", back_populates="employee")
+    user = relationship("User", back_populates="employee")
 
 
 class BankRequests(Base):

@@ -8,6 +8,7 @@ class RoleBase(BaseModel):
     role_name: str
     is_hr: Optional[bool] = False
     is_admin: Optional[bool] = False
+    is_employee: Optional[bool] = False
 
 
 class RoleCreate(RoleBase):
@@ -30,6 +31,29 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     role_id: int
+
+    # Employee-related fields
+    first_name: str
+    last_name: str
+    phone_number: Optional[str] = None
+    department: Optional[str] = None
+    position: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    national_insurance_number: Optional[str] = None
+
+
+class UserUpdate(UserBase):
+    password: Optional[str] = None
+    role_id: Optional[int] = None
+
+    # Employee-related fields
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    department: Optional[str] = None
+    position: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    national_insurance_number: Optional[str] = None
 
 
 class UserOut(UserBase):

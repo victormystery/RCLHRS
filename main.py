@@ -23,8 +23,9 @@ def init_db():
     try:
         # Create roles if not exist
         roles = {
-            "admin": {"is_admin": True, "is_hr": True},
-            "hr": {"is_admin": False, "is_hr": True},
+            "admin": {"is_admin": True, "is_hr": True, "is_employee": True},
+            "hr": {"is_admin": False, "is_hr": True, "is_employee": True},
+            "employee": {"is_admin": False, "is_hr": False, "is_employee": True},
         }
         for role_name, flags in roles.items():
             r = db.query(Role).filter(Role.role_name == role_name).first()
@@ -33,9 +34,10 @@ def init_db():
                     role_name=role_name,
                     is_admin=flags["is_admin"],
                     is_hr=flags["is_hr"],
+                    is_employee=flags["is_employee"],
                 )
                 db.add(r)
-                db.commit()  # Commit after each add to avoid bulk insert issues
+                db.commit()  # Commit after each add
 
         # Create default admin user if not exists
         admin_user = db.query(User).filter(User.username == "admin").first()
@@ -49,8 +51,22 @@ def init_db():
             )
             db.add(user)
             db.commit()
+            db.refresh(user)
+
+            # Create matching employee entry
+            from model import Employee
+            employee = Employee(
+                user_id=user.id,
+                first_name="Admin",
+                last_name="User",
+                email=user.email,
+                phone_number="0000000000",
+                department="Administration",
+                position="System Administrator",
+            )
+            db.add(employee)
+            db.commit()
+
     finally:
         db.close()
-
-
 init_db()
