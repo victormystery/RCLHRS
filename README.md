@@ -7,16 +7,16 @@ A FastAPI-based RESTful API for managing HR operations at Regent College London.
 - Employee management (CRUD)
 - DBS, Home Office, and Bank request management
 - User registration and login
-- Role-based access control (Admin, HR, User)
+- Role-based access control (Admin, HR)
 - JWT authentication
 - PostgreSQL database (via SQLAlchemy)
 - Pydantic v2 support
-- .env configuration for secrets
+- .env configuration for virtual environment
 
 ## Project Structure
 
 ```
-├── main.py
+├── main.py 
 ├── model.py
 ├── schemas.py
 ├── database.py
@@ -31,15 +31,16 @@ A FastAPI-based RESTful API for managing HR operations at Regent College London.
 │   └── dependencies.py
 ├── .env
 ├── requirements.txt
-└── ...
+└── README.md
+
 ```
 
 ## Setup Instructions
 
 1. **Clone the repository**
    ```powershell
-   git clone <repository-url>
-   cd <repository-folder>
+   git clone https://github.com/victormystery/RCLHRS.git
+   cd RCLHRS
    ```
 2. **Checkout to a new branch**
    ```powershell
@@ -48,14 +49,17 @@ A FastAPI-based RESTful API for managing HR operations at Regent College London.
 3. **Create and activate a virtual environment**
    ```powershell
    python -m venv .env
-   .env\Scripts\activate
    ```
+
+   ```powershell
+   .env\Scripts\activate
+   ```   
 4. **Install dependencies**
    ```powershell
    pip install -r requirements.txt
    ```
 5. **Configure your `.env` file**
-   - Add your `DATABASE_URL` and `SECRET_KEY`.
+   - Add the `DATABASE_URL` and `SECRET_KEY`.
 6. **Run the application**
    ```powershell
    uvicorn main:app --reload
