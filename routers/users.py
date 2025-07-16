@@ -44,7 +44,8 @@ def login_user(
             id=user.role.id,
             role_name=user.role.role_name,
             is_hr=user.role.is_hr,
-            is_admin=user.role.is_admin
+            is_admin=user.role.is_admin,
+            is_employee=user.role.is_employee
             
         )
     )
