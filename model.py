@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from database import Base
-from datetime import date
 
 
 class Role(Base):
@@ -53,7 +52,7 @@ class BankRequests(Base):
     status = Column(String, nullable=True)
     details = Column(String, nullable=True)
 
-    employee = relationship("Employee", back_populates="bank_requests" )
+    employee = relationship("Employee", back_populates="bank_requests")
 
 
 class HomeOfficeRequests(Base):

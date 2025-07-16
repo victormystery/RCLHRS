@@ -8,8 +8,11 @@ from model import User
 from database import get_db
 from functions_crud import get_user_by_username
 from schemas import TokenData
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "94ac9ecf8c89b245d803f271ee673050c57672fb4e02f66afa8cbf40100b3fac"
+load_dotenv('.env.custom')
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
