@@ -11,7 +11,7 @@ from schemas import TokenData
 import os
 from dotenv import load_dotenv
 
-load_dotenv('.env.custom')
+load_dotenv(".env.custom")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -49,3 +49,13 @@ def create_access_token(
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def check_user_exists(db: Session, username: str) -> dict:
+    user = get_user_by_username(db, username)
+    if user:
+        return {"detail": f"{username} already exists"}
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"{username} not found",
+    )

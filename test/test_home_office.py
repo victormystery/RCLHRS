@@ -1,5 +1,6 @@
 import pytest
 from fastapi import HTTPException
+from unittest.mock import MagicMock
 from model import HomeOfficeRequests
 from schemas import HomeOfficeRequestOut
 

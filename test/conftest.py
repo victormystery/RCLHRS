@@ -20,7 +20,7 @@ def mock_user_admin():
     role = MagicMock(spec=Role)
     role.role_name = "admin"
     role.is_admin = True
-    role.is_hr = False
+    role.is_hr = True
     user.role = role
     return user
 
