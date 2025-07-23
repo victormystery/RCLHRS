@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from re import search
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
 from datetime import date
 
@@ -40,6 +41,31 @@ class UserCreate(UserBase):
     position: Optional[str] = None
     date_of_birth: Optional[date] = None
     national_insurance_number: Optional[str] = None
+    
+    
+    @field_validator("email")
+    @classmethod
+    def validate_email_format(cls, value):
+        # # Regex for stricter email validation (complements EmailStr)
+        # email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        # if not search(email_pattern, value):
+        #     raise ValueError("Invalid email format")
+        # Optional: Block common temporary email domains
+        forbidden_domains = ["mailinator.com", "tempmail.com", "10minutemail.com", "example.com"]
+        if any(value.endswith("@" + domain) for domain in forbidden_domains):
+            raise ValueError("Temporary email addresses are not allowed")
+        return value
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value):
+        if len(value) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        if not search(r"[0-9]", value):
+            raise ValueError("Password must contain at least one number")
+        if not search(r"[!@#$%^&*(),.?\":{}|<>]", value):
+            raise ValueError("Password must contain at least one special character")
+        return value
 
 
 class UserUpdate(UserBase):
