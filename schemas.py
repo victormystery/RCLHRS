@@ -1,7 +1,8 @@
-from re import search
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
 from datetime import date
+from re import search
+from fastapi import HTTPException, status
 
 
 # Role schemas
@@ -41,30 +42,46 @@ class UserCreate(UserBase):
     position: Optional[str] = None
     date_of_birth: Optional[date] = None
     national_insurance_number: Optional[str] = None
-    
-    
+
     @field_validator("email")
     @classmethod
     def validate_email_format(cls, value):
-        # # Regex for stricter email validation (complements EmailStr)
-        # email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-        # if not search(email_pattern, value):
-        #     raise ValueError("Invalid email format")
-        # Optional: Block common temporary email domains
-        forbidden_domains = ["mailinator.com", "tempmail.com", "10minutemail.com", "example.com"]
+        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        if not search(email_pattern, value):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Invalid email format"
+            )
+        forbidden_domains = [
+            "mailinator.com",
+            "tempmail.com",
+            "10minutemail.com",
+            "example.com",
+        ]
         if any(value.endswith("@" + domain) for domain in forbidden_domains):
-            raise ValueError("Temporary email addresses are not allowed")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Temporary email addresses are not allowed",
+            )
         return value
 
     @field_validator("password")
     @classmethod
     def validate_password(cls, value):
         if len(value) < 8:
-            raise ValueError("Password must be at least 8 characters long")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Password must be at least 8 characters long",
+            )
         if not search(r"[0-9]", value):
-            raise ValueError("Password must contain at least one number")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Password must contain at least one number",
+            )
         if not search(r"[!@#$%^&*(),.?\":{}|<>]", value):
-            raise ValueError("Password must contain at least one special character")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Password must contain at least one special character",
+            )
         return value
 
 
@@ -80,6 +97,51 @@ class UserUpdate(UserBase):
     position: Optional[str] = None
     date_of_birth: Optional[date] = None
     national_insurance_number: Optional[str] = None
+
+    @field_validator("email")
+    @classmethod
+    def validate_email_format(cls, value):
+        if value is None:  # Skip if email is not provided
+            return value
+        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        if not search(email_pattern, value):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Invalid email format"
+            )
+        forbidden_domains = [
+            "mailinator.com",
+            "tempmail.com",
+            "10minutemail.com",
+            "example.com",
+        ]
+        if any(value.endswith("@" + domain) for domain in forbidden_domains):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Temporary email addresses are not allowed",
+            )
+        return value
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value):
+        if value is None:  # Skip if password is not provided
+            return value
+        if len(value) < 8:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Password must be at least 8 characters long",
+            )
+        if not search(r"[0-9]", value):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Password must contain at least one number",
+            )
+        if not search(r"[!@#$%^&*(),.?\":{}|<>]", value):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Password must contain at least one special character",
+            )
+        return value
 
 
 class UserOut(UserBase):
@@ -116,7 +178,7 @@ class EmployeeCreate(EmployeeBase):
 class EmployeeUpdate(EmployeeBase):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
     department: Optional[str] = None
     position: Optional[str] = None
