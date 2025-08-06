@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
 from routers import users, employees, bank_request, home_office, dbs
 from model import Role, User
@@ -8,6 +9,13 @@ from auth.auth import get_password_hash
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can restrict this to your frontend's URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routers (all CRUD and auth logic should be in routers)
 app.include_router(users.router)
@@ -55,6 +63,7 @@ def init_db():
 
             # Create matching employee entry
             from model import Employee
+
             employee = Employee(
                 user_id=user.id,
                 first_name="Admin",
@@ -69,4 +78,6 @@ def init_db():
 
     finally:
         db.close()
+
+
 init_db()
