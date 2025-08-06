@@ -11,11 +11,15 @@ router = APIRouter(prefix="/employees", tags=["Employees"])
 
 @router.get("/", response_model=List[EmployeeOut])
 def read_employees(db: Session = Depends(get_db), user=Depends(get_current_user)):
-    employees = db.query(Employee).options(
-        joinedload(Employee.bank_requests),
-        joinedload(Employee.dbs_checks),
-        joinedload(Employee.home_office_requests),
-    ).all()
+    employees = (
+        db.query(Employee)
+        .options(
+            joinedload(Employee.bank_requests),
+            joinedload(Employee.dbs_checks),
+            joinedload(Employee.home_office_requests),
+        )
+        .all()
+    )
     return [EmployeeOut.from_orm_with_status(emp) for emp in employees]
 
 
@@ -23,11 +27,16 @@ def read_employees(db: Session = Depends(get_db), user=Depends(get_current_user)
 def read_employee(
     employee_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    employee = db.query(Employee).options(
-        joinedload(Employee.bank_requests),
-        joinedload(Employee.dbs_checks),
-        joinedload(Employee.home_office_requests),
-    ).filter(Employee.id == employee_id).first()
+    employee = (
+        db.query(Employee)
+        .options(
+            joinedload(Employee.bank_requests),
+            joinedload(Employee.dbs_checks),
+            joinedload(Employee.home_office_requests),
+        )
+        .filter(Employee.id == employee_id)
+        .first()
+    )
 
     if not employee:
         raise HTTPException(404, "Employee not found")
@@ -36,9 +45,7 @@ def read_employee(
 
 
 @router.post("/", response_model=EmployeeOut)
-def create_employee(
-    employee: EmployeeCreate, db: Session = Depends(get_db)
-):
+def create_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
     new_employee = Employee(**employee.model_dump())
     db.add(new_employee)
     db.commit()
@@ -65,7 +72,7 @@ def update_employee(
     return EmployeeOut.from_orm_with_status(employee)
 
 
-@router.delete("/{employee_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{employee_id}", response_model=str)
 def delete_employee(
     employee_id: int, db: Session = Depends(get_db), user=Depends(require_admin)
 ):
@@ -75,3 +82,4 @@ def delete_employee(
 
     db.delete(employee)
     db.commit()
+    return "Successfully deleted employee"
